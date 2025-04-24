@@ -1,7 +1,8 @@
 const cloudinary = require('cloudinary').v2;
 const { s3, PutObjectCommand, GetObjectCommand, DeleteObjectCommand } = require('../configs/s3.config');
 const Utils = require('../utils');
-const { getSignedUrl } = require('@aws-sdk/s3-request-presigner')
+// const { getSignedUrl } = require('@aws-sdk/s3-request-presigner')
+const { getSignedUrl } = require('@aws-sdk/cloudfront-signer')
 const imageUrlPublic = process.env.AWS_CLOUDFRONT || 'https://d3sc9pwlohuokt.cloudfront.net'
 
 const uploadImageFromLocalS3 = async ({
@@ -23,22 +24,22 @@ const uploadImageFromLocalS3 = async ({
             Bucket: process.env.AWS_BUCKET_NAME,
             Key: imageName,
         });
-        const url = await getSignedUrl(s3, singedUrl, { expiresIn: 3600 });
+
+        // S3
+        // const url = await getSignedUrl(s3, singedUrl, { expiresIn: 3600 });
+
+        // CloudFront URL export
+        const url = getSignedUrl({
+            url: `${imageUrlPublic}/${imageName}`,
+            keyPairId: process.env.AWS_CLOUDFRONT_PUBLIC_KEY_ID,
+            dateLessThan: new Date(Date.now() + 1000 * 60), // 60 seconds
+            privateKey: process.env.AWS_CLOUDFRONT_PRIVATE_KEY,
+          });
  
         return {
-            url: `${imageUrlPublic}/${imageName}`,
+            url,
             result 
         }
-        // return {
-        //     image_url: result.secure_url,
-        //     shopID: '0000',
-        //     thumb_url: await cloudinary.url(result.public_id, {
-        //         width: 100,
-        //         height: 100,
-        //         quality: 'auto',
-        //         format: 'jpg',
-        //     })
-        // }
     } catch (error) {
         console.error(`Error upload image use S3Client::: ${error}`)
     }
