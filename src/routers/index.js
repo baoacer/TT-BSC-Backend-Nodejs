@@ -5,6 +5,13 @@ const router = express.Router()
 const CheckAuth = require("../auth/check.auth")
 const { pushToLogDiscord } = require("../middlewares/index")
 
+router.get('/checkstatus', (req, res) => {
+    res.status(200).json({ 
+        status: 200,
+        message: "OK"
+    })
+})
+
 router.use(pushToLogDiscord)
 router.use(CheckAuth.apiKey)
 // router.use(CheckAuth.permission("0"))
