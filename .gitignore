@@ -4,3 +4,4 @@ private_key.pem
 public_key.pem
 shopdev-server-pair.pem
 shopdev-mysql-server-key.pem
+logs

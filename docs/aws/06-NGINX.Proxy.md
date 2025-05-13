@@ -1,23 +1,20 @@
 
-# 🚀 CI/CD với GitHub Actions và EC2 (Node.js)
+# 🚀 Setup NGINX (Che port)
 
-## 🛠️ 1. Thiết lập Self-hosted Runner trên GitHub
+## 🛠️ 1. Install
+   ```bash
+   sudo apt-get install -y nginx
+   cd /etc/nginx/sites-available
+   sudo nano default
 
-1. 🔧 Truy cập **Repo > Settings > Actions > Runners > New self-hosted runner**.
-2. 💻 Kiểm tra loại hệ điều hành của server:
-   ```bash
-   lsb_release -a
-   ```
-3. 📦 Chọn Runner Image tương ứng (ví dụ: Linux).
-4. 📋 Làm theo hướng dẫn cài đặt runner, **bỏ qua bước cuối cùng** `./run.sh`.
-5. 🗂️ Kiểm tra thư mục:
-   ```bash
-   ls -la
-   ```
-6. ⚙️ Cài đặt và khởi động runner dưới dạng service:
-   ```bash
-   sudo ./svc.sh install
-   sudo ./svc.sh start
+   location /v1/api { 
+      rewrite ^\/api\/(.*)$ /api/$1 break;
+      proxy_pass  http://localhost:3056;
+      proxy_set_header Host $host;
+      proxy_set_header X-Real-IP $remote_addr;
+      proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+   }
+   sudo systemctl restart nginx
    ```
 
 ---
@@ -101,3 +98,13 @@ pm2 start server.js --name=shopdev-backend
    - **Port range**: 3056
    - **Source**: Anywhere-IPv4
 5. 💾 **Save rule**.
+
+## 6. Thiết lập chứng chỉ https
+```bash
+sudo add-apt-repository ppa:certbot/certbot
+sudo apt-get update
+sudo apt-get install python3-certbot-nginx
+sudo certbot --nginx -d shopdev.publicvm.com
+sudo certbot renew --dry-run 
+sudo systemctl status certbot.timer
+```
