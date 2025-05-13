@@ -1,5 +1,5 @@
 const { title } = require('process')
-const Logger = require('../logs/discord.log')
+const Logger = require('../loggers/discord.log')
 
 
 const pushLogDiscord = async (req, res, next) => {
@@ -8,7 +8,7 @@ const pushLogDiscord = async (req, res, next) => {
             title: `Method ${req.method}`,
             code: req.method === 'GET' ? req.query : req.body,
             message: `${req.get('host')} ${req.originalUrl}`
-        })
+        }) 
         return next()
     }catch(error){
         return next(error)
