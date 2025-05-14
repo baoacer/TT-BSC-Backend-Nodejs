@@ -1,21 +1,26 @@
-
 # 🚀 Setup NGINX (Che port)
 
 ## 🛠️ 1. Install
-   ```bash
-   sudo apt-get install -y nginx
-   cd /etc/nginx/sites-available
-   sudo nano default
 
-   location /api { 
-      rewrite ^\/api\/(.*)$ /api/$1 break;
-      proxy_pass  http://localhost:3056;
-      proxy_set_header Host $host;
-      proxy_set_header X-Real-IP $remote_addr;
-      proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
-   }
-   sudo systemctl restart nginx
-   ```
+```bash
+sudo apt-get install -y nginx
+cd /etc/nginx/sites-available
+sudo nano default
+```
+
+```nginx
+location /api {
+   rewrite ^\/api\/(.*)$ /api/$1 break;
+   proxy_pass  http://localhost:3056;
+   proxy_set_header Host $host;
+   proxy_set_header X-Real-IP $remote_addr;
+   proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+}
+```
+
+```bash
+sudo systemctl restart nginx
+```
 
 ---
 
@@ -29,7 +34,7 @@
 
    on:
      push:
-       branches: [ "main" ]
+       branches: ["main"]
 
    jobs:
      build:
@@ -45,7 +50,7 @@
            uses: actions/setup-node@v4
            with:
              node-version: ${{ matrix.node-version }}
-             cache: 'npm'
+             cache: "npm"
          - run: npm ci
          - run: pm2 restart shopdev-backend
    ```
@@ -100,11 +105,12 @@ pm2 start server.js --name=shopdev-backend
 5. 💾 **Save rule**.
 
 ## 6. Thiết lập chứng chỉ https
+
 ```bash
 sudo add-apt-repository ppa:certbot/certbot
 sudo apt-get update
 sudo apt-get install python3-certbot-nginx
 sudo certbot --nginx -d shopdev.publicvm.com
-sudo certbot renew --dry-run 
+sudo certbot renew --dry-run
 sudo systemctl status certbot.timer
 ```

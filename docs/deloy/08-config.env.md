@@ -1,10 +1,43 @@
 # 🚀 Config .env using systemd
 
-## 🛠️ 1. Install
+## 🛠️ Step 1: Create Environment File
 
 ```bash
- sudo apt update
- sudo apt upgrade -y
+ sudo nano /etc/.env
+ sudo chmod 600 /etc/.env
+ sudo chown ubuntu:ubuntu /etc/.env
+```
+
+## Step 2: Create the systemd Service File
+
+```bash
+sudo nano /etc/systemd/system/myapp.service
+```
+
+```nano
+[Unit]
+Description=Node.js App
+After=network.target multi-user.target
+
+[Service]
+User=ubuntu
+WorkingDirectory=/home/ubuntu/actions-runner/_work/e-Commerce-node/e-Commerce-node
+ExecStart=/usr/bin/node server.js
+Restart=always
+Environment=NODE_ENV=development
+EnvironmentFile=/etc/.env
+StandardOutput=syslog
+StandardError=syslog
+SyslogIdentifier=myapp
+
+[Install]
+WantedBy=multi-user.target
+```
+
+```bash
+sudo systemctl daemon-reload
+sudo systemctl enable myapp.service
+sudo systemctl start myapp.service
 ```
 
 Add repo mongodb
