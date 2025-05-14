@@ -28,11 +28,7 @@ jobs:
     - name: Install dependencies
       run: npm ci
 
-    - name: Install PM2
-      run: npm install -g pm2
-
-    - name: Start or restart app with PM2
+    - name: Restart Node.js app with systemd
       run: |
-        pm2 start server.js --name shopdev-backend || pm2 restart shopdev-backend
-        pm2 save 
-  
+        sudo systemctl daemon-reload
+        sudo systemctl restart myapp
