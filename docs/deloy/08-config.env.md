@@ -1,21 +1,30 @@
-
-# 🚀 Setup NGINX (Che port)
+# 🚀 Config .env using systemd
 
 ## 🛠️ 1. Install
-   ```bash
-   sudo apt-get install -y nginx
-   cd /etc/nginx/sites-available
-   sudo nano default
 
-   location /api { 
-      rewrite ^\/api\/(.*)$ /api/$1 break;
-      proxy_pass  http://localhost:3056;
-      proxy_set_header Host $host;
-      proxy_set_header X-Real-IP $remote_addr;
-      proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
-   }
-   sudo systemctl restart nginx
-   ```
+```bash
+ sudo apt update
+ sudo apt upgrade -y
+```
+
+Add repo mongodb
+```bash
+wget -qO - https://pgp.mongodb.com/server-6.0.asc | sudo gpg --dearmor -o /usr/share/keyrings/mongodb-server-6.0.gpg
+echo "deb [ arch=amd64,arm64 signed-by=/usr/share/keyrings/mongodb-server-6.0.gpg ] https://repo.mongodb.org/apt/ubuntu jammy/mongodb-org/6.0 multiverse" | sudo tee /etc/apt/sources.list.d/mongodb-org-6.0.list
+```
+
+Install Mongodb
+```bash
+sudo apt update
+sudo apt install -y mongodb-org
+```
+
+Start and check status
+```bash
+sudo systemctl start mongod
+sudo systemctl enable mongod
+sudo systemctl status mongod
+```
 
 ---
 
@@ -29,7 +38,7 @@
 
    on:
      push:
-       branches: [ "main" ]
+       branches: ["main"]
 
    jobs:
      build:
@@ -45,7 +54,7 @@
            uses: actions/setup-node@v4
            with:
              node-version: ${{ matrix.node-version }}
-             cache: 'npm'
+             cache: "npm"
          - run: npm ci
          - run: pm2 restart shopdev-backend
    ```
@@ -100,11 +109,12 @@ pm2 start server.js --name=shopdev-backend
 5. 💾 **Save rule**.
 
 ## 6. Thiết lập chứng chỉ https
+
 ```bash
 sudo add-apt-repository ppa:certbot/certbot
 sudo apt-get update
 sudo apt-get install python3-certbot-nginx
 sudo certbot --nginx -d shopdev.publicvm.com
-sudo certbot renew --dry-run 
+sudo certbot renew --dry-run
 sudo systemctl status certbot.timer
 ```
