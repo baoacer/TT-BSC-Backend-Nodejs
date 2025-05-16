@@ -12,6 +12,8 @@ router.get('/api/checkstatus', (req, res) => {
     })
 })
 
+router.use('/v1/api/vnpay', require('./vnpay/index'))
+
 router.use(pushToLogDiscord)
 router.use(CheckAuth.apiKey)
 // router.use(CheckAuth.permission("0"))
