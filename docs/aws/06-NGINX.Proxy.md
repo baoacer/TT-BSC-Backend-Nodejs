@@ -20,7 +20,19 @@ location / {
 ```
 
 ```bash
+sudo nginx -t 
 sudo systemctl restart nginx
+```
+
+## 2. Thiết lập chứng chỉ https
+
+```bash
+sudo add-apt-repository ppa:certbot/certbot
+sudo apt-get update
+sudo apt-get install python3-certbot-nginx
+sudo certbot --nginx -d nguyenlequocbao.id.vn
+sudo certbot renew --dry-run
+sudo systemctl status certbot.timer
 ```
 
 ---
@@ -105,13 +117,4 @@ pm2 start server.js --name=shopdev-backend
    - **Source**: Anywhere-IPv4
 5. 💾 **Save rule**.
 
-## 6. Thiết lập chứng chỉ https
 
-```bash
-sudo add-apt-repository ppa:certbot/certbot
-sudo apt-get update
-sudo apt-get install python3-certbot-nginx
-sudo certbot --nginx -d shopdev.publicvm.com
-sudo certbot renew --dry-run
-sudo systemctl status certbot.timer
-```

@@ -40,6 +40,13 @@ sudo systemctl enable myapp.service
 sudo systemctl start myapp.service
 ```
 
+Config pm2 start server
+```bash
+pm2 start npm --name shopdev-backend -- run dev
+pm2 save
+pm2 startup
+```
+
 Add repo mongodb
 ```bash
 wget -qO - https://pgp.mongodb.com/server-6.0.asc | sudo gpg --dearmor -o /usr/share/keyrings/mongodb-server-6.0.gpg
