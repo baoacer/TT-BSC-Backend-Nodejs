@@ -18,6 +18,7 @@ router.use(pushToLogDiscord)
 router.use(CheckAuth.apiKey)
 // router.use(CheckAuth.permission("0"))
 
+router.use('/v1/api/chat', require('./chat/index'))
 router.use('/v1/api/profile', require('./profile/index'))
 router.use('/v1/api/rbac', require('./rbac/index'))
 router.use('/v1/api/notification', require('./notifications/index'))

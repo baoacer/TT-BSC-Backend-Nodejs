@@ -81,9 +81,7 @@ class ProductController {
     static getListSearchProducts = async ( req, res, next ) => { 
         new SuccessResponse({
             message: "Get List Product Search Success!",
-            metadata: await ProductFactory.searchProducts({
-                keySearch: req.params.keySearch
-            })
+            metadata: await ProductFactory.searchProducts( req.query )
         }).send(res)
     } 
 
