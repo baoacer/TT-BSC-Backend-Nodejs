@@ -5,7 +5,7 @@ const ProductController = require('../../controllers/product.controller')
 const AuthUtils = require('../../auth/auth.utils')
 const router = express.Router()
     
-router.get('/search/:keySearch', asyncHandler(ProductController.getListSearchProducts))
+router.get('/search', asyncHandler(ProductController.getListSearchProducts))
 router.get('', asyncHandler(ProductController.getAllProducts))  
 router.get('/:productId', asyncHandler(ProductController.getProduct))  
  

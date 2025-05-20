@@ -23,8 +23,8 @@ const ProductSchema = new Schema(
       set: (val) => Math.round(val * 10) / 10  //set: biến đổi value trước khi save to db
     },
     product_variations: { type: Array, default: [] }, // ex: color : price
-    isDraft: { type: Boolean, default: true, index: true, select: false },
-    isPublished: { type: Boolean, default: false, index: true, select: false },
+    isDraft: { type: Boolean, default: false, index: true, select: false },
+    isPublished: { type: Boolean, default: true, index: true, select: false },
   },
   { timestamps: true, collection: COLLECTION_NAME }
 );

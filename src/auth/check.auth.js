@@ -12,14 +12,14 @@ class CheckAuth {
             const key = req.headers[HEADER.API_KEY]
             if(!key){
                 return res.status(403).json({
-                    message: "Invalid Api Key[1]"
+                    message: "Invalid Api Key"
                 })
             }
             const existsKey = await ApiKeyService.findByKey(key)
 
             if(!existsKey){
                 return res.status(403).json({
-                    message: "Invalid Api Key [2]"
+                    message: "Invalid Api Key"
                 })
             } 
 
