@@ -14,93 +14,51 @@ const { product } = require('../models/product.model')
    - delete cart [user]
    - delete item [user]
  */
-class CartService{
-  
-    static async addToCart({ user_id, product = {} }){
 
-        const { product_id, product_quantity } = product
+const addToCart = async ({ userID, product = {} }) => {
 
-        // check exists 
-        const userCart = await Cart.findOne({ cart_user_id: Utils.convertObjectId(user_id) })
+    const { id: productID, quantity } = product
 
-        // check product exists
-        const foundProduct = await ProductRepository.findProductSelect({
-            productId: product_id,
-            select: ['product_name', 'product_price', 'product_shop']
-        })
-        if(!foundProduct) throw new NotFoundError('Product Not Found')
+    // check exists 
+    const userCart = await CartRepository.findCartByUserID({ userID })
 
-        foundProduct.product_quantity = product_quantity
-        
-        // cart not exits 
-        // create
-        if(!userCart){
-            return CartRepository.createCart({ userId: user_id, product: foundProduct })
-        }
+    // check product exists
+    const foundProduct = await ProductRepository.findProductSelect({
+        productID,
+        select: ['name', 'price', 'discount']
+    })
+    if(!foundProduct) throw new NotFoundError('Product Not Found')
 
-        // cart exists 
-        // 1. cart exists but not product 
-        if(!userCart.cart_products.length){
-            userCart.cart_products = [foundProduct]
-            return await userCart.save()
-        }
-
-        // 2. cart exists and have product -> update quantity
-        return await CartRepository.updateUserCartQuantity({ userId: user_id, product: foundProduct })
+    foundProduct.quantity = quantity
+    
+    // cart not exits 
+    // create
+    if(!userCart){
+        return CartRepository.createCart({ userID , product: foundProduct })
     }
 
-     
-    // [reduce, increase] product quantity
-    /*
-      user_id
-      shop_order_id: [
-          {
-              shop_id,
-              cart_products: [
-                  {
-                    product_quantity,
-                    product_price,
-                    shop_id,
-                    old_quantity,
-                    product_id
-                  }
-              ],
-              version
-          }
-      ]
-     */
-    static async addToCartV2({ user_id, shop_order_ids }){
-        const { _id, product_quantity, old_quantity } = shop_order_ids[0]?.item_products[0]
-
-        // check exists
-        const foundProduct = await ProductRepository.findProductById(_id)
-        if(!foundProduct) throw new NotFoundError('Product not found')
-
-        // compare
-        if(foundProduct.product_shop.toString() !== shop_order_ids[0].shop_id){
-            throw new NotFoundError('Product To Not Belong To Shop')
-        }
-
-        if(product_quantity === 0){
-            return await this.deleteUserCartItem({ userId: user_id, productId: _id })
-        }
-
-        return await CartRepository.updateUserCartQuantity({
-            userId: user_id,
-            product: {
-                _id: _id,
-                product_quantity: product_quantity - old_quantity
-            }
-        })
-    }    
-
-    static async deleteUserCartItem({ userId, productId }){
-        return await CartRepository.deleteUserCartItem({ userId, productId })
+    // cart exists 
+    // 1. cart exists but not product 
+    const isProductInCart = userCart.cart_products.findIndex(p => p._id.toString() === foundProduct._id.toString())
+    if(isProductInCart === -1){
+        userCart.cart_products.push(foundProduct)
+        return await userCart.save()
     }
 
-    static async getListUserCart({ userId }){
-        return await CartRepository.findListUserCart({ userId })
-    }
-}   
+    // 2. cart exists and have product -> update quantity
+    return await CartRepository.updateUserCartQuantity({ userID, product: foundProduct })
+}
 
-module.exports = CartService
+const deleteUserCartItem = async ({ userID, productID }) => {
+    return await CartRepository.deleteUserCartItem({ userID, productID })
+}
+
+const getListUserCart = async ( userID ) => {
+    return await CartRepository.findListUserCart({ userID })
+}
+
+module.exports = {
+    addToCart,
+    deleteUserCartItem,
+    getListUserCart
+}

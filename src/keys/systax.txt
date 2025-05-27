@@ -1,5 +1,0 @@
--- create private_key
-openssl genrsa -out private_key.pem 2048 
-
--- create public_key from private_key
-openssl rsa -pubout -in private_key.pem -out public_key.pem 

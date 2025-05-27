@@ -1,43 +1,33 @@
-const { CREATED, Ok, SuccessResponse } = require('../core/success.response')
-const accessService = require('../services/access.service')
+const AccessService = require('../services/access.service')
+const { StatusCodes } = require('../utils/handler/http.status.code')
 
-class AccessController{
-
-    handlerRefreshToken = async (req, res, next) => {
-        new SuccessResponse({
-            message: "Get Token Success!",
-            metadata: await accessService.handlerRefreshToken({ 
-                refreshToken: req.refreshToken,
-                key: req.key 
-            })
-        }).send(res) 
-    }
-
-    logout = async (req, res, next) => {
-        new SuccessResponse({
-            message: "Logout Success!",
-            metadata: await accessService.logout({ key: req.key })
-        }).send(res) 
-    }
-
-    signUp = async (req, res, next) => {
-        new CREATED({
-            message: "Register Success!",
-            status: 201,
-            metadata: await accessService.signUp(req.body)
-        }).send(res) 
-    }
-
-    login = async (req, res, next) => {
-        const sendData = Object.assign(
-            { requestId: req.requestId },
-            req.body
-        )
-        new SuccessResponse({
-            message: "Login Success!",
-            metadata: await accessService.login(sendData)
-        }).send(res) 
+const login = async (req, res, next) => {
+    try {
+        const user = await AccessService.login(req.body)
+        return res.status(StatusCodes.OK).json({
+            status: StatusCodes.OK,
+            message: 'Login successfully',
+            data: user
+        })
+    } catch (error) {
+        next(error)
     }
 }
 
-module.exports = new AccessController()
+const signUp = async (req, res, next) => {
+    try {
+        const user = await AccessService.signUp(req.body)
+        return res.status(StatusCodes.CREATED).json({
+            status: StatusCodes.CREATED,
+            message: 'SignUp successfully',
+            data: user
+        })
+    } catch (error) {
+        next(error)
+    }
+}
+
+module.exports = {
+    login,
+    signUp
+}

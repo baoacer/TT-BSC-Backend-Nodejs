@@ -19,14 +19,13 @@ const htmlEmailToken = () => {
           </tr>
           <tr>
             <td style="color:#555555; font-size:16px; line-height:1.5;">
-              <p>Chào <strong>[Tên người dùng]</strong>,</p>
-              <p>Cảm ơn bạn đã đăng ký tài khoản tại <strong>[Tên ứng dụng]</strong>!</p>
+              <p>Cảm ơn bạn đã đăng ký tài khoản tại <strong>ShopDEV</strong>!</p>
               <p>Vui lòng nhấn vào nút bên dưới để xác minh địa chỉ email của bạn:</p>
             </td>
           </tr>
           <tr>
             <td align="center" style="padding: 20px 0;">
-              <a href="https://your-domain.com/verify?token=your_verification_token"
+              <a href="{{link_verify}}"
                  style="background-color:#4CAF50; color:#ffffff; text-decoration:none; padding:12px 24px; border-radius:5px; font-size:16px; display:inline-block;">
                 Xác minh email
               </a>
@@ -34,13 +33,13 @@ const htmlEmailToken = () => {
           </tr>
           <tr>
             <td style="color:#777777; font-size:14px;">
-              <p>Nếu bạn không đăng ký tài khoản tại <strong>[Tên ứng dụng]</strong>, vui lòng bỏ qua email này.</p>
-              <p>Trân trọng,<br/>Đội ngũ <strong>[Tên ứng dụng]</strong></p>
+              <p>Nếu bạn không đăng ký tài khoản tại <strong>ShopDEV</strong>, vui lòng bỏ qua email này.</p>
+              <p>Trân trọng!</p>
             </td>
           </tr>
           <tr>
             <td style="padding-top: 20px; font-size:12px; color:#aaaaaa; text-align:center;">
-              © 2025 [Tên ứng dụng]. Mọi quyền được bảo lưu.
+              © 2025 ShopDEV. Mọi quyền được bảo lưu.
             </td>
           </tr>
         </table>

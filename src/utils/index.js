@@ -5,6 +5,10 @@ const { Types } = require("mongoose");
 const crypto = require("crypto");
 
 class Utils {
+  static createSlug(str){
+    return str.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '');
+  }
+
   static sortObject(obj) {
     let sorted = {};
     let str = [];
@@ -39,6 +43,14 @@ class Utils {
     return Object.fromEntries(select.map((el) => [el, 0]));
   };
 
+  static unGetGetData = (obj, fields = []) => {
+    const result = { ...obj._doc ? obj._doc : obj }; 
+    for (const field of fields) {
+        delete result[field];
+    }
+    return result;
+  }
+
   static removeUndefinedObject = (obj) => {
     Object.keys(obj).forEach((key) => {
       if (obj[key] === null || obj[key] === undefined) {
@@ -72,6 +84,15 @@ class Utils {
     });
     return final;
   };
+
+
+  static replacePlaceholder( template, params ){
+    Object.keys(params).forEach( key => {
+      const placeholder = `{{${key}}}`;
+      template = template.replace( new RegExp(placeholder, 'g'), params[key] );
+    })
+    return template;
+  } 
 }
 
 module.exports = Utils;

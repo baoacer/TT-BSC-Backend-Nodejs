@@ -23,6 +23,12 @@ class ConflictRequestError extends ErrorResponse {
   }
 }
 
+class RedisErrorResponse extends ErrorResponse {
+  constructor(message = ReasonPhrases.INTERNAL_SERVER_ERROR, status = StatusCodes.INTERNAL_SERVER_ERROR) {
+    super(message, status);
+  }
+}
+
 class BadRequestError extends ErrorResponse {
   constructor(
     message = ReasonPhrases.BAD_REQUEST,
@@ -66,4 +72,5 @@ module.exports = {
   AuthFailureError,
   NotFoundError,
   FobiddenError,
+  RedisErrorResponse
 };

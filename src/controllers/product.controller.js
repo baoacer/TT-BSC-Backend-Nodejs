@@ -1,123 +1,101 @@
 'use strict'
-const ProductFactory = require('../services/product.service')
+const ProductService = require('../services/product.service')
 const { SuccessResponse } = require('../core/success.response')
+const { StatusCodes } = require('../utils/handler/http.status.code')
 
-class ProductController {
-
-    /**
-     * @desc Create Product
-     * @param {String} type - type of product 
-     * @param {Object} payload - product data
-     * @returns {JSON} 
-     */
-    static createProduct = async ( req, res, next ) => { 
-        new SuccessResponse({
-            message: "Create Product Success!",
-            metadata: await ProductFactory.createProduct({
-                type: req.body.product_type,
-                payload: {
-                    ...req.body,
-                    product_shop: req.key.shop 
-                }
-            })
-        }).send(res)
+const createProduct = async ( req, res, next ) => { 
+    try {
+        const product = await ProductService.createProduct(req.body)
+        res.status(StatusCodes.CREATED).json({
+            status: StatusCodes.CREATED,
+            message: 'Create Product Success!',
+            data: product
+        })
+    } catch (error) {
+        next(error)
     }
-
-    // ============== put ================
-
-    static updateProduct = async ( req, res, next ) => { 
-        new SuccessResponse({
-            message: "Update Product Success!",
-            metadata: await ProductFactory.updateProduct( 
-                req.params.productId, req.body.product_type, {
-                ...req.body,
-                product_shop: req.key.shop
-            })
-        }).send(res)
-    }
-
-    static unPublishProductByShop = async ( req, res, next ) => { 
-        new SuccessResponse({
-            message: "Publish Product Success!",
-            metadata: await ProductFactory.unPublishProductByShop({
-                shopId: req.key.shop,
-                productId: req.params.productId
-            })
-        }).send(res)
-    }
-
-    static publishProductByShop = async ( req, res, next ) => { 
-        new SuccessResponse({
-            message: "Publish Product Success!",
-            metadata: await ProductFactory.publishProductByShop({
-                shopId: req.key.shop,
-                productId: req.params.productId
-            })
-        }).send(res)
-    }
-
-    // =============== end put ================
-
-
-
-    // =============== query ================
-
-    static getProduct = async ( req, res, next ) => { 
-        new SuccessResponse({
-            message: "Get Product Success!",
-            metadata: await ProductFactory.findProduct({
-                productId: req.params.productId
-            })
-        }).send(res)
-    } 
-
-    static getAllProducts = async ( req, res, next ) => { 
-        new SuccessResponse({
-            message: "Get All Product Success!",
-            metadata: await ProductFactory.findAllProducts( req.params )
-        }).send(res)
-    } 
-
-    static getListSearchProducts = async ( req, res, next ) => { 
-        new SuccessResponse({
-            message: "Get List Product Search Success!",
-            metadata: await ProductFactory.searchProducts( req.query )
-        }).send(res)
-    } 
-
-    /**
-     * @desc Get all publish for shop
-     * @param {String} shopId 
-     * @param {Number} limit 
-     * @param {Number} skip
-     * @returns {JSON} 
-     */
-    static getAllPublishsForShop = async ( req, res, next ) => { 
-        new SuccessResponse({
-            message: "Get List Publish Success!",
-            metadata: await ProductFactory.findAllPublishsForShop({
-                shopId: req.key.shop
-            })
-        }).send(res)
-    } 
-
-    /**
-     * @desc Get all draft for shop
-     * @param {String} shopId 
-     * @param {Number} limit 
-     * @param {Number} skip
-     * @returns {JSON} 
-     */
-    static getAllDraftsForShop = async ( req, res, next ) => { 
-        new SuccessResponse({
-            message: "Get List Draft Success!",
-            metadata: await ProductFactory.findAllDraftsForShop({
-                shopId: req.key.shop
-            })
-        }).send(res)
-    }    
-
-    // =============== end query ================
 }
 
-module.exports = ProductController
+// ============== put ================
+
+// const updateProduct = async ( req, res, next ) => { 
+//     new SuccessResponse({
+//         message: "Update Product Success!",
+//         metadata: await ProductFactory.updateProduct( 
+//             req.params.productId, req.body.product_type, {
+//             ...req.body,
+//             product_shop: req.key.shop
+//         })
+//     }).send(res)
+// }
+
+
+
+
+// =============== query ================
+
+const getProduct = async ( req, res, next ) => { 
+    try {
+        const product = await ProductService.findProductByID(req.params)
+        res.status(StatusCodes.OK).json({
+            status: StatusCodes.OK,
+            message: "Get Product Success!",
+            data: product
+        })
+    } catch (error) {
+        next(error)
+    }
+    
+} 
+
+const getAllProducts = async ( req, res, next ) => { 
+    try {
+        const products = await ProductService.findAllProducts(req.query)
+        res.status(StatusCodes.OK).json({
+            status: StatusCodes.OK,
+            message: "Get All Product Success!",
+            data: products
+        })
+    } catch (error) {
+        next(error)
+    }
+} 
+
+const getAllProductsByCategory = async ( req, res, next ) => { 
+    try {
+        const { categoryID } = req.params
+        const products = await ProductService.findAllProductsByCategory({
+            ...req.query,
+            categoryID
+        })
+        res.status(StatusCodes.OK).json({
+            status: StatusCodes.OK,
+            message: "Get All Product By Category Success!",
+            data: products
+        })
+    } catch (error) {
+        next(error)
+    }
+} 
+
+const getListSearchProducts = async ( req, res, next ) => { 
+    try {
+        const products = await ProductService.searchProduct(req.query)
+        res.status(StatusCodes.OK).json({
+            status: StatusCodes.OK,
+            message: "Search Product Success!",
+            data: products
+        })
+    } catch (error) {
+        next(error)
+    }
+} 
+
+
+module.exports = {
+    createProduct,
+    getProduct,
+    getAllProducts,
+    getListSearchProducts,
+    getAllProductsByCategory
+}

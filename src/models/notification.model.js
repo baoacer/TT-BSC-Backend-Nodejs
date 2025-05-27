@@ -3,7 +3,7 @@
 const { Schema, model } = require("mongoose");
 const DOCUMENT_NAME = "Notification";
 const COLLECTION_NAME = "Notifications";
-const { ORDER_01, ORDER_02, PROMOTION_01, SHOP_01 } = require('../utils/contants');
+const { ORDER_01, ORDER_02, PROMOTION_01, SHOP_01 } = require('../configs/contants');
 // ORDER-01: order success
 // ORDER-02: order failed
 // PROMOTION-01: new promotion

@@ -1,66 +1,45 @@
 const CartService = require("../services/cart.service")
-const { SuccessResponse } = require("../core/success.response")
+const { StatusCodes } = require("../utils/handler/http.status.code")
 
-class CartController{
-
-    /**
-     * @desc Add product to cart for user
-     * @param {String} userId 
-     * @param {Object} product 
-     * @method POST
-     * @url /v1/api/cart
-     * @returns {JSON}
-     */
-    static addToCart = async ( req, res, next ) => {
-        new SuccessResponse({
+const addToCart = async ( req, res, next ) => {
+    try {
+        res.status(StatusCodes.OK).json({
+            status: StatusCodes.OK,
             message: "Add Product To Cart Success",
-            metadata: await CartService.addToCart(req.body)
-        }).send(res)
-    } 
-
-   /**
-     * @desc update + -
-     * @param {String} userId 
-     * @param {Object} product 
-     * @method POST
-     * @url /v1/api/cart
-     * @returns {JSON}
-     */
-    static update = async ( req, res, next ) => {
-        new SuccessResponse({
-            message: "Update Quantity Product Success!",
-            metadata: await CartService.addToCartV2(req.body)
-        }).send(res)
+            data: await CartService.addToCart(req.body)
+        })
+    } catch (error) {
+        next(error)
     }
+} 
 
-     /**
-     * @desc delete
-     * @param {String} userId 
-     * @param {Object} product 
-     * @method POST
-     * @url /v1/api/cart
-     * @returns {JSON}
-     */
-     static delete = async ( req, res, next ) => {
-        new SuccessResponse({
+const deleteProductToCard = async ( req, res, next ) => {
+    try {
+        res.status(StatusCodes.OK).json({
+            status: StatusCodes.OK,
             message: "Delete Cart Item Success!",
-            metadata: await CartService.deleteUserCartItem(req.body)
-        }).send(res)
-    }
-
-    /**
-     * @desc Get list user cart
-     * @param {String} userId 
-     * @method GET
-     * @url /v1/api/cart
-     * @returns {JSON}
-     */
-    static getListUserCart = async ( req, res, next ) => {
-        new SuccessResponse({
-            message: "Get List User Cart Success!",
-            metadata: await CartService.getListUserCart(req.query)
-        }).send(res)
+            data: await CartService.deleteUserCartItem(req.body)
+        })
+    } catch (error) {
+        next(error)
     }
 }
 
-module.exports = CartController
+const getListUserCart = async ( req, res, next ) => {
+     try {
+        const { userID } = req.query
+        res.status(StatusCodes.OK).json({
+            status: StatusCodes.OK,
+            message: "Get List Card Success!",
+            data: await CartService.getListUserCart(userID)
+        })
+    } catch (error) {
+        next(error)
+    }
+}
+
+module.exports = {
+    addToCart,
+    deleteProductToCard,
+    getListUserCart
+}

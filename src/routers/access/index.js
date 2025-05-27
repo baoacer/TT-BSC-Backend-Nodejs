@@ -11,10 +11,10 @@ router.post("/signup", asyncHandler(AccessController.signUp))
 router.post("/login", asyncHandler(AccessController.login))
 
 // Authentication
-router.use(AuthUtils.authentication)
+// router.use(AuthUtils.authentication)
 // ================== //
 
-router.post("/logout", asyncHandler(AccessController.logout))
-router.post("/handlerRefreshToken", asyncHandler(AccessController.handlerRefreshToken))
+// router.post("/logout", asyncHandler(AccessController.logout))
+// router.post("/handlerRefreshToken", asyncHandler(AccessController.handlerRefreshToken))
     
 module.exports = router
