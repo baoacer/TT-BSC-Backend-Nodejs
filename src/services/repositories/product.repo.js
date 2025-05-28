@@ -166,6 +166,10 @@ const searchProduct = async ({
   };
 };
 
+const deleteProduct = async ({ productID }) => {
+  return Product.deleteOne({ _id: productID }).lean()
+}
+
   
 module.exports = {
   findProductByID,
@@ -174,5 +178,6 @@ module.exports = {
   createProduct,
   searchProduct,
   findByCode,
-  findProductSelect
+  findProductSelect,
+  deleteProduct
 };

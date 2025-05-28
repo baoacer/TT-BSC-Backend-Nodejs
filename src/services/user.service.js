@@ -1,6 +1,6 @@
 const bycrypt = require("bcrypt")
 const Utils = require("../utils")
-const { BadRequestError, AuthFailureError, FobiddenError } = require("../core/error.response")
+const { BadRequestError, AuthFailureError, FobiddenError, ConflictRequestError } = require("../core/error.response")
 const UserRepository = require("./repositories/user.repo")
 
 const signUp = async ({

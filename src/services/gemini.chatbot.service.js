@@ -3,7 +3,6 @@ require("dotenv").config();
 const { GoogleGenAI } = require("@google/genai");
 const ai = new GoogleGenAI({ apiKey: process.env.AI_GEMINI_API_KEY });
 const ProductService = require("./product.service");
-const Utils = require("../utils");
 
 /**
  🧑 Người dùng hỏi → 🔁 Gửi về API Node.js

@@ -67,6 +67,10 @@ const searchProduct = async ({
   });
 }
 
+const deleteProduct = async ({ productID }) => {
+  return await ProductRepository.deleteProduct({ productID });
+}
+
 
 
 
@@ -75,5 +79,6 @@ module.exports = {
   findAllProducts,
   createProduct,
   findAllProductsByCategory,
-  searchProduct
+  searchProduct,
+  deleteProduct
 };

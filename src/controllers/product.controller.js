@@ -91,11 +91,25 @@ const getListSearchProducts = async ( req, res, next ) => {
     }
 } 
 
+const deleteProduct = async ( req, res, next ) => { 
+    try {
+        res.status(StatusCodes.OK).json({
+            status: StatusCodes.OK,
+            message: "Delete Product Success!",
+            data: await ProductService.deleteProduct(req.query)
+        })
+    } catch (error) {
+        next(error)
+    }
+} 
+
+
 
 module.exports = {
     createProduct,
     getProduct,
     getAllProducts,
     getListSearchProducts,
-    getAllProductsByCategory
+    getAllProductsByCategory,
+    deleteProduct
 }

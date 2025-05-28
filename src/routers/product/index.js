@@ -10,6 +10,7 @@ router.get('/search', asyncHandler(ProductController.getListSearchProducts))
 router.get('', asyncHandler(ProductController.getAllProducts))  
 router.get('/category/:categoryID', asyncHandler(ProductController.getAllProductsByCategory))  
 router.get('/:productID', asyncHandler(ProductController.getProduct))  
+router.delete('/delete', asyncHandler(ProductController.deleteProduct))  
 
 // router.patch('/:productId', asyncHandler(ProductController.updateProduct))
 // router.post('', asyncHandler(ProductController.createProduct))
