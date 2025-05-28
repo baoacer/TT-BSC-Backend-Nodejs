@@ -6,5 +6,6 @@ const validation = require('../../validations/checkout.validation')
 
 router.post('/review', validation.review, asyncHandler(CheckoutController.checkoutReview))
 router.post('/order', validation.order, asyncHandler(CheckoutController.orderByUser))
+router.get('/:userID', asyncHandler(CheckoutController.getAllOrderByUser))
 
 module.exports = router

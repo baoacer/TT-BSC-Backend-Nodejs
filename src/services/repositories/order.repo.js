@@ -15,10 +15,14 @@ const createOrder = async (payload) => {
 const findOrderById = async ({ orderID }) => {
     return await Order.findOne({ _id: orderID }).lean()
 }
-    
+
+const getAllOrderByUserID = async ({ userID }) => {
+    return await Order.find({ order_user_id: userID })
+}
 
 
 module.exports = {
     createOrder,
-    findOrderById
+    findOrderById,
+    getAllOrderByUserID
 }

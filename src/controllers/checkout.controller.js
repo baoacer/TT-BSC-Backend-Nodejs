@@ -25,8 +25,22 @@ const orderByUser = async ( req, res, next ) => {
     }
 }
 
+const getAllOrderByUser = async ( req, res, next ) => {
+    try {
+        const { userID } = req.params
+        return res.status(StatusCodes.OK).json({
+            status: StatusCodes.OK,
+            message: "New Order By User",
+            data: await CheckoutService.getAllOrderByUser({ userID })
+        })
+    } catch (error) {
+        next(error)
+    }
+}
+
 
 module.exports = {
     checkoutReview,
-    orderByUser
+    orderByUser,
+    getAllOrderByUser
 }

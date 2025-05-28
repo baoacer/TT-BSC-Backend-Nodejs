@@ -79,8 +79,8 @@ const orderByUser = async ({
 }
 
 // query order [User]
-const getOrderByUser = async () => {
-    
+const getAllOrderByUser = async ({ userID }) => {
+    return await OrderRepository.getAllOrderByUserID({ userID });
 }
 
 // get one order [User]
@@ -98,6 +98,7 @@ const updateOrderStatusByShop = async () => {
 }
 
 module.exports = {
+    getAllOrderByUser,
     checkoutReview,
     orderByUser
 }
