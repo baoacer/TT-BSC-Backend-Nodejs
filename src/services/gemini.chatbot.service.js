@@ -1,7 +1,7 @@
 "use strict";
 require("dotenv").config();
 const { GoogleGenAI } = require("@google/genai");
-const ai = new GoogleGenAI({ apiKey: process.env.AI_GEMINI_API_KEY });
+const ai = new GoogleGenAI({ apiKey: 'AIzaSyCVZ2YLpxwVk6YJPrs88e2JWUToMCEPGiE' });
 const ProductService = require("./product.service");
 
 /**
