@@ -30,7 +30,7 @@ const getAllOrderByUser = async ( req, res, next ) => {
         const { userID } = req.params
         return res.status(StatusCodes.OK).json({
             status: StatusCodes.OK,
-            message: "New Order By User",
+            message: "Get List Order By User",
             data: await CheckoutService.getAllOrderByUser({ userID })
         })
     } catch (error) {
