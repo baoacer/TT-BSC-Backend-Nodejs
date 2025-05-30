@@ -12,6 +12,8 @@ const createNew = async (req, res, next) => {
             .max(100)
             .trim()
             .strict(),
+        
+        description: Joi.string().max(256).trim(),
 
         image: Joi.string()
             .uri()
