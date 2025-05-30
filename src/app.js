@@ -8,6 +8,11 @@ const router = require('./routers/index')
 const app = express();
 const myLogger = require('./loggers/mylogger.log')
 
+const cors = require('cors')
+app.use(cors({
+    origin: "*"
+}))
+
 // init middleware
 app.use(morgan('dev'))
 app.use(helmet())
