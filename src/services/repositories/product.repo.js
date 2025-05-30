@@ -48,7 +48,7 @@ const Utils = require("../../utils/index");
   // };
 
 const createProduct = async ({
-  name, image, price, discount, category, sizes, code, quantity
+  name, image, price, discount, category, sizes, code, quantity, description
 }) => {
   return await Product.create({
     name,
@@ -58,7 +58,8 @@ const createProduct = async ({
     category,
     sizes,
     code,
-    quantity
+    quantity,
+    description
   })
 }
 
@@ -131,6 +132,7 @@ const searchProduct = async ({
     const keywords = keyword.trim().split(/\s+/);
     query.$or = keywords.map(kw => ({
       name: { $regex: kw, $options: "i" },
+      description: { $regex: kw, $options: "i" },
     }));
   }
 

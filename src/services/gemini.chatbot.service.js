@@ -4,14 +4,6 @@ const { GoogleGenAI } = require("@google/genai");
 const ai = new GoogleGenAI({ apiKey: 'AIzaSyCVZ2YLpxwVk6YJPrs88e2JWUToMCEPGiE' });
 const ProductService = require("./product.service");
 
-/**
- 🧑 Người dùng hỏi → 🔁 Gửi về API Node.js
-  → Truy vấn database (lọc theo từ khóa hoặc category, price)
-  → Chọn ra 5–10 sản phẩm phù hợp nhất
-  → Tạo prompt: “Chỉ dùng thông tin dưới đây để tư vấn...”
-  → Gửi prompt cho Gemini API
-  → Trả lại phản hồi cho người dùng 
- */
 class GeminiChatbotService {
   static async call(contents) {
     const response = await ai.models.generateContent({
@@ -55,7 +47,7 @@ class GeminiChatbotService {
 
   static async buildAdviceReply(products, userMessage) {
   const productList = products.map((p, idx) =>
-    `${idx + 1}. ${p.name} - Giá: ${p.price}VND - Ảnh: ${p.image} - ${p.sizes ? ` - Size: ${p.sizes.join(', ')}` : ''}`
+    `${idx + 1}. ${p.name} - Giá: ${p.price}VND - Ảnh: ${p.image} - Mô tả: ${p.description} - ${p.sizes ? ` - Size: ${p.sizes.join(', ')}` : ''}`
   ).join('\n');
 
   const prompt = `
@@ -82,7 +74,7 @@ class GeminiChatbotService {
       minPrice: min_price,
       maxPrice: max_price,
       limit: 5,
-      select: ['name', 'image', 'price', 'sizes']
+      select: ['name', 'image', 'price', 'sizes', 'description']
     })
 
     if (results.length === 0) {
