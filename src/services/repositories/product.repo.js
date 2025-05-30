@@ -130,10 +130,11 @@ const searchProduct = async ({
   
   if (keyword) {
     const keywords = keyword.trim().split(/\s+/);
-    query.$or = keywords.map(kw => ({
-      name: { $regex: kw, $options: "i" },
-      description: { $regex: kw, $options: "i" },
-    }));
+    query.$or = []
+    keywords.forEach(kw => {
+      query.$or.push({ name: { $regex: kw, $options: "i" } });
+      query.$or.push({ description: { $regex: kw, $options: "i" } });
+    })
   }
 
   if (minPrice || maxPrice) {
