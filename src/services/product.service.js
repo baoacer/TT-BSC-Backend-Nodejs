@@ -4,7 +4,7 @@ const { ConflictRequestError, NotFoundError } = require('../core/error.response'
 const CategoryRepository = require("./repositories/category.repo");
 
 const createProduct = async ({
-  name, image, price, discount = 0, category, sizes = [], code, quantity
+  name, image, price, description, discount = 0, category, sizes = [], code, quantity
 }) => {
   const existingCode = await ProductRepository.findByCode({ code })
   if(existingCode){
@@ -17,7 +17,7 @@ const createProduct = async ({
   }
 
   const product = await ProductRepository.createProduct({
-    name, image, price, discount, category, sizes, code, quantity
+    name, image, price, discount, category, sizes, code, quantity, description
   })
 
   return product;
