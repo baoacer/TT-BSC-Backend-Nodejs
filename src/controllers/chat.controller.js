@@ -68,7 +68,8 @@ class ChatController {
             * Hướng dẫn Trả lời
             1. Định dạng tiền VND: Luôn hiển thị dạng 1.000.000 VND
             2. Chuyển hướng trang:
-            - gửi đường dẫn chuyển hướng trang dưới dạng thẻ a
+            - Gửi đường dẫn chuyển hướng trang dưới dạng thẻ <a>, + trong đó: href là http://localhost:5173/product/{productId}
+            + Nội dung hiển thị là tên sản phẩm
             - Nếu muốn xem sản phẩm nào thì phải dựa vào id sản phẩm để truy cập (/product/{id sản phẩm})
             - URL quan trọng:
             • Trang chủ: URL = /
