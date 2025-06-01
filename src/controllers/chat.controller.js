@@ -13,7 +13,7 @@ class ChatController {
     */
     getChatHistory = async (req, res, next) => {
         try {
-            const userID = req.headers.user_id;
+            const userID = req.headers['user_id'] || req.headers['user-id']
             if(!userID) throw new BadRequestError('User ID is required')
 
             const history = await ChatService.getHistory({ userID })
@@ -26,7 +26,7 @@ class ChatController {
     postUserMessage = async (req, res, next) => {
         try {
             const { message } = req.body;
-            const userID = req.headers.user_id
+            const userID = req.headers['user_id'] || req.headers['user-id']
             if(!userID) throw new BadRequestError('User ID is required')
             const user = UserRepository.findUserByID({ userID });
             if(!user) throw new BadRequestError('User not found')
@@ -127,7 +127,7 @@ class ChatController {
 
     deleteChatHistory = async (req, res, next) => {
         try {
-            const userID = req.headers.user_id
+            const userID = req.headers['user_id'] || req.headers['user-id']
            const result = await ChatService.deleteHistory({ userID });
            return res.json({
             result
