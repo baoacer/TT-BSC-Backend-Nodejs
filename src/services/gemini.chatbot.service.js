@@ -3,91 +3,50 @@ require("dotenv").config();
 const { GoogleGenAI } = require("@google/genai");
 const ai = new GoogleGenAI({ apiKey: 'AIzaSyCVZ2YLpxwVk6YJPrs88e2JWUToMCEPGiE' });
 const ProductService = require("./product.service");
+const { BadRequestError } = require("../core/error.response");
+const ChatMessage = require('../models/chatbot.model')
 
-class GeminiChatbotService {
-  static async call(contents) {
-    const response = await ai.models.generateContent({
-      model: "gemini-2.0-flash",
-      contents: contents,
-    });
-    console.log(response.text);
+/**
+ * insert message to chat history 
+ */
+const insertHistory = async ({ userID, isBot, message }) => {
+  try {
+    const chat = new ChatMessage({ chat_user_id: userID, isBot, message });
+    return await chat.save();
+  } catch (error) {
+    throw new BadRequestError("Error inserting chat history: " + error.message);
   }
+};
 
-  static async extractKeywordsFromMessage(userMessage) {
-    const prompt = `
-      Bạn là trợ lý AI. Hãy phân tích câu sau và trích xuất các từ khóa liên quan đến tư vấn sản phẩm.
-      Trả kết quả dưới dạng JSON có cấu trúc sau:
-      {
-        "features": [các đặc điểm người dùng yêu cầu (loại sản phẩm, size)],
-        "max_price": (giá tối đa, nếu có, đơn vị VND),
-        "min_price": (giá tối thiểu, nếu có, đơn vị VND)
-      }
-      Câu hỏi: "${userMessage}"
-    `;
-
-    const response = await ai.models.generateContent({
-      model: "gemini-2.0-flash",
-      contents: prompt,
-    });
-    const text = response.text;
-
-    try {
-      const jsonMatch = text.match(/\{[\s\S]*\}/);
-      if (jsonMatch) {
-        return JSON.parse(jsonMatch[0]);
-      } else {
-        throw new Error("Không tìm thấy JSON trong phản hồi.");
-      }
-    } catch (err) {
-      console.error("Lỗi khi phân tích phản hồi Gemini:", err);
-      console.log("Phản hồi thô:", text);
-      return null;
-    }
+const getHistory = async ({ userID, limit = 30 }) => {
+  try {
+    return await ChatMessage.find({ chat_user_id: userID })
+      .sort({ createdAt: -1 })
+      .limit(limit)
+      .lean();
+  } catch (error) {
+    throw new BadRequestError("Error getting chat history: " + error.message);
   }
+};
 
-  static async buildAdviceReply(products, userMessage) {
-  const productList = products.map((p, idx) =>
-    `${idx + 1}. ${p.name} - Giá: ${p.price}VND - Ảnh: ${p.image} - Mô tả: ${p.description} - ${p.sizes ? ` - Size: ${p.sizes.join(', ')}` : ''}`
-  ).join('\n');
-
-  const prompt = `
-    Bạn là trợ lý bán hàng. Dưới đây là danh sách sản phẩm phù hợp với yêu cầu của khách:
-    ${productList}
-
-    Yêu cầu của khách: "${userMessage}"
-
-    Hãy tư vấn ngắn gọn, thân thiện, gợi ý 2-3 sản phẩm nổi bật nhất, giải thích vì sao phù hợp, và khuyến khích khách chọn mua.`;
-
-  const response = await ai.models.generateContent({
-    model: "gemini-2.0-flash",
-    contents: prompt,
-  });
-
-  return response.text;
+const deleteHistory = async ({ userID }) => {
+  return await ChatMessage.deleteMany({ chat_user_id: userID })
 }
 
-  static async searchProductsByAI({message}) {
-    const { features, max_price, min_price } = await GeminiChatbotService.extractKeywordsFromMessage(message);
+const sendMessageChatbot = async ({ systemPrompt, userMessage }) => {
+  const promptText = systemPrompt ? `\`\`\`${systemPrompt}\`\`\`\n\n\`\`\`CÂU HỎI CỦA KHÁCH HÀNG: ${userMessage.trim()}\`\`\`` : userMessage.trim();
 
-    const { data: results } = await ProductService.searchProduct({
-      keyword: Array.isArray(features) ? features.join(" ") : features,
-      minPrice: min_price,
-      maxPrice: max_price,
-      limit: 5,
-      select: ['name', 'image', 'price', 'sizes', 'description']
-    })
-
-    if (results.length === 0) {
-      return { reply: "Xin lỗi, không tìm thấy sản phẩm phù hợp." };
-    }
-
-    const reply = await GeminiChatbotService.buildAdviceReply(results, message)
-
-    return { 
-      reply
-    };
-
-  }
+    const response = await ai.models.generateContent({
+      model: "gemini-2.0-flash",
+      contents: promptText,
+    });
+    
+    return response.text
 }
 
-module.exports = GeminiChatbotService;
+module.exports = {
+  getHistory,
+  insertHistory,
+  sendMessageChatbot,
+  deleteHistory
+};
