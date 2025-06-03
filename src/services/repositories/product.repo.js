@@ -181,6 +181,6 @@ module.exports = {
   createProduct,
   searchProduct,
   findByCode,
-  findProductSelect,
+  findProductUnSelect,
   deleteProduct
 };

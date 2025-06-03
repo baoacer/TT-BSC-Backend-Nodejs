@@ -12,7 +12,8 @@ const addToCart = async (req, res, next) => {
             .messages({
                 'string.pattern.base': 'Invalid product ID format'
             }),
-            quantity: Joi.number().required().max(1000)
+            quantity: Joi.number().required().max(1000),
+            size: Joi.string().required().trim().strict()
         }).required()
     })
 

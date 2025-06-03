@@ -23,9 +23,9 @@ const addToCart = async ({ userID, product = {} }) => {
     const userCart = await CartRepository.findCartByUserID({ userID })
 
     // check product exists
-    const foundProduct = await ProductRepository.findProductSelect({
+    const foundProduct = await ProductRepository.findProductUnSelect({
         productID,
-        select: ['createdAt', 'updatedAt', '__v']
+        unSelect: ['createdAt', 'updatedAt', '__v', 'sizes']
     })
     if(!foundProduct) throw new NotFoundError('Product Not Found')
 
