@@ -22,27 +22,22 @@ class VnPayController {
 
     async handlePaymentResponse(req, res, next) {
         try {
-            const result = await VnPayService.handlePaymentResponse(req.query)
+            const result = VnPayService.handlePaymentResponse(req.query)
             if(result.data && result.data.vnp_ResponseCode === '00'){
                 const orderID = result.data.vnp_TxnRef;
                 const order = await OrderRepository.findOrderById({ orderID });
-                console.log(`Order:: ${order}`)
                 if (order) {
                     await CartRepository.clearUserCart({ userID: order.order_user_id });
                 }
             }
-            return res.status(StatusCodes.OK).json({
-                message: 'Xử lý phản hồi thanh toán',
-                metadata: result
-            })
+            const feUrl = `http://localhost:5173/payment-result`
+                    + `?vnp_TransactionStatus=${result.data.vnp_TransactionStatus}`
+                    + `&vnp_TxnRef=${result.data.vnp_TxnRef}`
+                    + `&vnp_Amount=${result.data.vnp_Amount}`;
+            return res.redirect(feUrl);
         } catch (error) {
             next(error)
         }
-
-        return new SuccessResponse({
-            message: 'Xử lý phản hồi thanh toán',
-            metadata: await VnPayService.handlePaymentResponse(req.query)
-        }).send(res)
     }
 }
 
