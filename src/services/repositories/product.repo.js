@@ -170,7 +170,7 @@ const searchProduct = async ({
 };
 
 const deleteProduct = async ({ productID }) => {
-  return Product.deleteOne({ _id: productID }).lean()
+  return Product.deleteOne({ _id: Utils.convertObjectId(productID) }).lean()
 }
 
   

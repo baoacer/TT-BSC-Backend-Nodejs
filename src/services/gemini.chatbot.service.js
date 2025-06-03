@@ -1,7 +1,7 @@
 "use strict";
 require("dotenv").config();
 const { GoogleGenAI } = require("@google/genai");
-const ai = new GoogleGenAI({ apiKey: 'AIzaSyCVZ2YLpxwVk6YJPrs88e2JWUToMCEPGiE' });
+const ai = new GoogleGenAI({ apiKey: 'AIzaSyBmiTOmjbkYYIxbMAGgqr4CdE-zACXZjsU' });
 const ProductService = require("./product.service");
 const { BadRequestError } = require("../core/error.response");
 const ChatMessage = require('../models/chatbot.model')
