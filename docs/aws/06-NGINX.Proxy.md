@@ -42,31 +42,31 @@ sudo systemctl status certbot.timer
 1. 🔍 Truy cập **Repo > Actions**, tìm kiếm `Node.js`, chọn `Configure`.
 2. 📁 Tạo file `.github/workflows/node.js.yml` với nội dung sau:
 
-   ```yaml
-   name: Node.js CI/CD shopDEV
+```yaml
+name: Node.js CI
+on:
+push:
+  branches: [ "main" ]
 
-   on:
-     push:
-       branches: ["main"]
+jobs:
+build:
 
-   jobs:
-     build:
-       runs-on: self-hosted
+  runs-on: self-hosted
 
-       strategy:
-         matrix:
-           node-version: [22.x]
+  strategy:
+    matrix:
+      node-version: [20.x]
 
-       steps:
-         - uses: actions/checkout@v4
-         - name: Use Node.js ${{ matrix.node-version }}
-           uses: actions/setup-node@v4
-           with:
-             node-version: ${{ matrix.node-version }}
-             cache: "npm"
-         - run: npm ci
-         - run: pm2 restart shopdev-backend
-   ```
+  steps:
+  - uses: actions/checkout@v4
+  - name: Use Node.js ${{ matrix.node-version }}
+    uses: actions/setup-node@v4
+    with:
+      node-version: ${{ matrix.node-version }}
+      cache: 'npm'
+  - run: npm ci
+  - run: pm2 restart server.js
+```
 
 ---
 
