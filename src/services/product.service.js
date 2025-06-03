@@ -28,7 +28,7 @@ const findProductByID = async ({ productID }) => {
 }
 
 const findAllProducts = async ({
-  limit = 10, page = 1
+  limit = 20, page = 1
 }) => {
   return await ProductRepository.findAllProducts({ limit, page })
 }
