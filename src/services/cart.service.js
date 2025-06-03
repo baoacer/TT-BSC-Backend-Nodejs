@@ -25,17 +25,15 @@ const addToCart = async ({ userID, product = {} }) => {
     // check product exists
     const foundProduct = await ProductRepository.findProductUnSelect({
         productID,
-        unSelect: ['createdAt', 'updatedAt', '__v']
+        unSelect: ['createdAt', 'updatedAt', '__v', 'sizes']
     })
     if(!foundProduct) throw new NotFoundError('Product Not Found')
 
     foundProduct.quantity = quantity
 
-    if (!foundProduct.sizes || !foundProduct.sizes.includes(size)) {
-        throw new NotFoundError('Size Not Found');
+    if(size){
+        foundProduct.size = size
     }
-    delete foundProduct.sizes;
-    foundProduct.size = size
 
     // cart not exits 
     // create

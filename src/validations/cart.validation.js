@@ -13,7 +13,11 @@ const addToCart = async (req, res, next) => {
                 'string.pattern.base': 'Invalid product ID format'
             }),
             quantity: Joi.number().required().max(1000),
-            size: Joi.trim()
+            size: Joi.alternatives().try(
+                Joi.string().trim().allow(''),
+                Joi.number(),
+                Joi.valid(null)
+            )
         }).required()
     })
 
