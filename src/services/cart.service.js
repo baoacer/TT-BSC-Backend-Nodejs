@@ -17,7 +17,7 @@ const { product } = require('../models/product.model')
 
 const addToCart = async ({ userID, product = {} }) => {
 
-    const { id: productID, quantity } = product
+    const { id: productID, quantity, size } = product
 
     // check exists 
     const userCart = await CartRepository.findCartByUserID({ userID })
@@ -25,12 +25,13 @@ const addToCart = async ({ userID, product = {} }) => {
     // check product exists
     const foundProduct = await ProductRepository.findProductSelect({
         productID,
-        select: ['name', 'price', 'discount']
+        select: ['createdAt', 'updatedAt', '__v']
     })
     if(!foundProduct) throw new NotFoundError('Product Not Found')
 
     foundProduct.quantity = quantity
-    
+    foundProduct.size = size
+
     // cart not exits 
     // create
     if(!userCart){

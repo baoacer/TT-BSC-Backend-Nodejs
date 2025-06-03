@@ -79,12 +79,12 @@ const findByCode = async ({
     .lean();
 };
 
-const findProductSelect = async ({
-  productID, select = []
+const findProductUnSelect = async ({
+  productID, unSelect = []
 }) => {
   return await Product
     .findOne({ _id: productID })
-    .select(Utils.getSelectData(select))
+    .select(Utils.unGetSelectData(unSelect))
     .lean();
 };
 
