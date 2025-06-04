@@ -16,7 +16,11 @@ const checkoutReview = async ({ cartID }) => {
         totalDiscount: 0,
         totalCheckout: 0
     }
-    cartProducts = foundCart.cart_products
+    const cartProducts = foundCart.cart_products
+
+    if (!cartProducts || cartProducts.length === 0) {
+        throw new BadRequestError('Giỏ hàng trống')
+    }
 
     for (let i = 0; i < cartProducts.length; i++) {
         const { _id: productID, quantity  } = cartProducts[i]  
@@ -26,15 +30,15 @@ const checkoutReview = async ({ cartID }) => {
 
         const { price, discount } = checkProductServer
         
-        // Tinh tong tien cua tung san pham
+        // Tính tổng tiền của từng sản phẩm
         const checkoutPrice = price * quantity
 
-        // Tong tien truoc khi ap dung discount
+        // Tổng tiền trước khi áp dụng discount
         checkoutOrder.totalPrice += checkoutPrice
 
         // if have discount 
         if(discount > 0){
-            checkoutOrder.totalDiscount += price * discount
+            checkoutOrder.totalDiscount += price * quantity * discount
         }
     }
 
@@ -55,7 +59,7 @@ const orderByUser = async ({
     const { cart_products } = await CartRepository.findCartById({ cartID })
     if(!user) throw new NotFoundError('Wrong order')
 
-    const newOrder = OrderRepository.createOrder({
+    const newOrder = await OrderRepository.createOrder({
         order_user_id: user._id,
         order_checkout: totalCheckout,
         order_shipping: user.address,
@@ -69,9 +73,9 @@ const orderByUser = async ({
 
     if(payment == PAYMENT.VNPAY){
         return VnPayService.createPaymentUrl({
-            orderAmount: (await newOrder).order_checkout,
+            orderAmount: newOrder.order_checkout,
             orderType: payment,
-            orderId: (await newOrder)._id
+            orderId: newOrder._id
         })
     }
 
