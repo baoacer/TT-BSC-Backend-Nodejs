@@ -55,7 +55,8 @@ const updateUserCartQuantity = async ({ userID, product }) => {
 
     const cart = await Cart.findOne({
         cart_user_id: userID,
-        "cart_products._id": productID
+        "cart_products._id": productID,
+        "cart_products.size": size
     })
 
     if(!cart) throw new NotFoundError('Product Not Found')
@@ -73,7 +74,8 @@ const updateUserCartQuantity = async ({ userID, product }) => {
     return await Cart.findOneAndUpdate(
         {
             cart_user_id: userID,
-            "cart_products._id": productID
+            "cart_products._id": productID,
+            "cart_products.size": size
         },
         updateSet,
         options
