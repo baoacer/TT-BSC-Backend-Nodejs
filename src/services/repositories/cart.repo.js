@@ -51,7 +51,7 @@ const createCart = async ({ userID, product }) => {
 }
 
 const updateUserCartQuantity = async ({ userID, product }) => {
-    const { _id: productID, quantity } = product
+    const { _id: productID, quantity, size } = product
 
     const cart = await Cart.findOne({
         cart_user_id: userID,
