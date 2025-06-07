@@ -14,7 +14,7 @@ const findListUserCart = async ({ userID }) => {
     return await Cart.findOne({ cart_user_id: userID }).lean()
 }
 
-const deleteUserCartItem = async ({ userID, productID }) => {
+const deleteUserCartItem = async ({ userID, productID, size }) => {
     const query = {
         cart_user_id: userID
     }
@@ -22,7 +22,8 @@ const deleteUserCartItem = async ({ userID, productID }) => {
     const updateSet = {
         $pull: {
             cart_products: {
-                _id: Utils.convertObjectId(productID)
+                _id: Utils.convertObjectId(productID),
+                size: size
             }
         }
     }

@@ -39,6 +39,7 @@ const deleteProductToCard = async (req, res, next) => {
         .messages({
             'string.pattern.base': 'Invalid product ID format'
         }),
+        size: Joi.string().required().trim().strict()
     })
 
     try {
