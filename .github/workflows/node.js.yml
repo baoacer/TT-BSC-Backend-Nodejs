@@ -20,6 +20,9 @@ jobs:
       with:
         node-version: ${{ matrix.node-version }}
         cache: 'npm'
+    - name: Write .env from secret
+      run: echo "${{ secrets.ENV_CONTENT  }}" > .env
+      
     - run: npm ci
     - run: pm2 restart server.js
 
