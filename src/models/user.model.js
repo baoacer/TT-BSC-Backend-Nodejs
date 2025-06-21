@@ -6,11 +6,13 @@ const DOCUMENT_NAME = 'User'
 const COLLECTION_NAME = 'Users'
 
 const UserSchema = new Schema({
-    name: {type: String, required: true},
+    name: {type: String},
     email: {type: String, required: true},
-    password: {type: String, required: true},
-    phone: {type: String, required: true},
-    address: {type: String, required: true}
+    password: {type: String},
+    phone: {type: String},
+    address: {type: String},
+    isActive: { type: Boolean, default: true },
+    role: { type: Schema.Types.ObjectId, ref: 'Role'},
 }, {
     timestamps: true,
     collection: COLLECTION_NAME

@@ -2,11 +2,11 @@
 
 const Category = require('../../models/category.model');
 
-const findByName = async (name) => {
+const findByName = async ({ name }) => {
     return await Category.findOne({ name });
 }
 
-const create = async (name) => {
+const createCategory = async ({ name }) => {
     return await Category.create({ name });
 }
 
@@ -18,17 +18,17 @@ const findById = async (id) => {
     return await Category.findById(id);
 }
 
-const updateById = async (id, name) => {
+const updateById = async ({ id, name }) => {
     return await Category.findByIdAndUpdate(id, { name }, { new: true });
 }
 
-const deleteById = async (id) => {
+const deleteById = async ({ id }) => {
     return await Category.findByIdAndDelete(id);
 }
 
 module.exports = {
     findByName,
-    create,
+    createCategory,
     findAll,
     findById,
     updateById,

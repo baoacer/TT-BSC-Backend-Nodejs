@@ -2,43 +2,53 @@
 const Inventory = require('../../models/inventory.model')
 
 const createInventory = async ({
-    productID, stock, location = null
+    productID, size, stock
 }) => {
     return await Inventory.create({
-        inven_product_id: productID,
-        inven_stock: stock,
-        inven_location: location
+        product_id: productID,
+        size,
+        stock
     })
 }
 
-const findInventoryByProductID = async ({
+const getInventoryByProductID = async ({
     productID
 }) => {
-    return await Inventory.findOne({ inven_product_id: productID })
+    return await Inventory.find({ product_id: productID })
+    .select('size stock -_id')
+    .lean();
 }
 
 const updateInventoryStock = async ({ 
-    productID, incStock = null, setStock = null
+    productID, size, incStock = null, setStock = null
  }) => {
     const update = {};
     if (incStock !== null) {
-        update.$inc = { inven_stock: incStock };
+        update.$inc = { stock: incStock };
     }
     if (setStock !== null) {
-        update.$set = { inven_stock: setStock };
+        update.$set = { stock: setStock };
     }
     if (Object.keys(update).length === 0) {
         throw new Error('No update operation specified');
     }
-    return await Inventory.findOneAndUpdate(
-        { inven_product_id: productID },
+
+    const newInven = await Inventory.findOneAndUpdate(
+        { product_id: productID, size: size },
         update,
         { new: true }
     );
+
+    return newInven
+};
+
+const deleteInventoryByProductID = async ({ productID }) => {
+  return await Inventory.deleteMany({ product_id: productID });
 };
 
 module.exports = {
     updateInventoryStock,
     createInventory,
-    findInventoryByProductID
+    getInventoryByProductID,
+    deleteInventoryByProductID
 }

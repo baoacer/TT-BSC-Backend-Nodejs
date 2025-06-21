@@ -3,109 +3,94 @@
 const { findById } = require("../../models/cart.model");
 const Product = require("../../models/product.model");
 const Utils = require("../../utils/index");
-
-  // static checkProductByServer = async (products) => {
-  //   return await Promise.all(
-  //     products.map(async (product) => {
-  //       const foundProduct = await this.findProductById(product.id);
-  //       if (foundProduct) {
-  //         return {
-  //           product_price: foundProduct.product_price,
-  //           product_quantity: product.product_quantity,
-  //           product_id: foundProduct._id,
-  //         };
-  //       }
-  //     })
-  //   );
-  // };
-
-  // static updateProductById = async ({
-  //   productId,
-  //   payload,
-  //   model,
-  //   isNew = true,
-  // }) => {
-  //   const updateProduct = await model.findByIdAndUpdate(productId, payload, {
-  //     new: isNew,
-  //   });
-  //   return updateProduct;
-  // };
-
-  // static findProductUnSelect = async ({ productId, unSelect }) => {
-  //   return await product
-  //     .findById(productId)
-  //     .select(Utils.unGetSelectData(unSelect))
-  //     .lean()
-  //     .exec();
-  // };
-
-  // static findProductSelect = async ({ productId, select }) => {
-  //   return await product
-  //     .findById(productId)
-  //     .select(Utils.getSelectData(select))
-  //     .lean()
-  //     .exec();
-  // };
+const InventoryRepository = require("./inventory.repo");
+const CategoryRepository = require("./category.repo");
+const { NotFoundError } = require("../../core/error.response");
 
 const createProduct = async ({
-  name, image, price, discount, category, sizes, code, quantity, description
+  name,
+  images,
+  price,
+  discount,
+  category,
+  code,
+  description,
 }) => {
   return await Product.create({
     name,
-    image,
+    images,
     price,
     discount,
     category,
-    sizes,
     code,
-    quantity,
-    description
-  })
-}
-
-const findProductByID = async ({
-  productID
-}) => {
-  return await Product
-    .findOne({ _id: productID })
-    .lean();
+    description,
+  });
 };
 
-const findByCode = async ({
-  code
-}) => {
-  return await Product
-    .findOne({ code })
-    .lean();
+const findProductByID = async ({ productID }) => {
+  const product = await Product.findOne({ _id: productID }).lean();
+  if (!product) return null;
+  const inventory = await InventoryRepository.getInventoryByProductID({
+    productID,
+  });
+  return { ...product, sizes: inventory };
 };
 
-const findProductUnSelect = async ({
-  productID, unSelect = []
-}) => {
-  return await Product
-    .findOne({ _id: productID })
+const findByCode = async ({ code }) => {
+  return await Product.findOne({ code }).lean();
+};
+
+const findProductUnSelect = async ({ productID, unSelect = [] }) => {
+  return await Product.findOne({ _id: productID })
     .select(Utils.unGetSelectData(unSelect))
     .lean();
 };
 
-const findAllProducts = async ({ limit, page}) => {
+const findAllProducts = async ({ limit, page, sort = { createdAt: -1 } }) => {
   const skip = (page - 1) * limit;
-  const products = await Product
-    .find()
-    .sort({ createdAt: -1 })
-    .skip(skip)
-    .limit(limit)
-    .lean()
-    .exec();
 
-  return products;
+  let [products, total] = await Promise.all([
+    Product.find().sort(sort).skip(skip).limit(limit).lean().exec(),
+    Product.countDocuments(),
+  ]);
+
+  products = await Promise.all(
+    products.map(async (product) => {
+      const inventory = await InventoryRepository.getInventoryByProductID({
+        productID: product._id,
+      });
+      return {
+        ...product,
+        sizes: inventory,
+      };
+    })
+  );
+
+  return {
+    products,
+    pagination: {
+      total,
+      page,
+      limit,
+      totalPage: Math.ceil(total / limit),
+    },
+  };
 };
 
-const findAllProductsByCategory = async ({ limit, page, categoryID }) => {
+const findAllProductsByCategory = async ({ limit, page, category }) => {
   const skip = (page - 1) * limit;
-  const filter = categoryID ? { category: categoryID } : {}
-  const products = await Product
-    .find(filter)
+  let filter = {};
+  if (category) {
+    const categoryExists = await CategoryRepository.findByName({
+      name: category,
+    });
+    if (!categoryExists) {
+      throw new NotFoundError("Category not found");
+    }
+    filter = categoryExists ? { category: categoryExists._id } : {};
+  }
+
+  const products = await Product.find(filter)
     .populate("category", "name")
     .sort({ createdAt: -1 })
     .skip(skip)
@@ -113,67 +98,121 @@ const findAllProductsByCategory = async ({ limit, page, categoryID }) => {
     .lean()
     .exec();
 
-  return products;
+  const total = await Product.countDocuments(filter);
+
+  const productsWithInventory = await Promise.all(
+    products.map(async (product) => {
+      const inventory = await InventoryRepository.getInventoryByProductID(
+        product._id
+      );
+      return { ...product, sizes: inventory };
+    })
+  );
+  return {
+    products: productsWithInventory,
+    pagination: {
+      total,
+      page,
+      limit,
+      totalPage: Math.ceil(total / limit),
+    },
+  };
 };
 
 const searchProduct = async ({
-  keyword,
-  minPrice,
-  maxPrice,
+  keyword = null,
+  minPrice = null,
+  maxPrice = null,
   sortOrder = "desc",
-  sortBy = 'createdAt',
-  page,
-  limit,
-  select = []
+  sortBy = "createdAt",
+  page = 1,
+  limit = 20,
+  select = [],
+  category = null,
 }) => {
-  const query = {};
-  
+  const match = {};
+
   if (keyword) {
-    const keywords = keyword.trim().split(/\s+/);
-    query.$or = []
-    keywords.forEach(kw => {
-      query.$or.push({ name: { $regex: kw, $options: "i" } });
-      query.$or.push({ description: { $regex: kw, $options: "i" } });
-    })
+    match.name = { $regex: keyword, $options: "i" };
   }
 
-  if (minPrice || maxPrice) {
-    query.price = {};
-    if (minPrice) query.price.$gte = parseFloat(minPrice);
-    if (maxPrice) query.price.$lte = parseFloat(maxPrice);
+  if (category) {
+    const categoryExists = await CategoryRepository.findByName({
+      name: category,
+    });
+    if (categoryExists) {
+      match.category = categoryExists._id;
+    }
   }
 
+  // Tạo pipeline
+  const pipeline = [
+    {
+      $addFields: {
+        finalPrice: {
+          $subtract: ["$price", { $multiply: ["$price", "$discount"] }],
+        },
+      },
+    },
+    { $match: match },
+  ];
+
+  // Lọc theo giá đã giảm
+  const priceFilter = {};
+  if (minPrice) priceFilter.$gte = parseFloat(minPrice);
+  if (maxPrice) priceFilter.$lte = parseFloat(maxPrice);
+  if (Object.keys(priceFilter).length > 0) {
+    pipeline.push({ $match: { finalPrice: priceFilter } });
+  }
+
+  // Sắp xếp
   const sortOptions = {};
   sortOptions[sortBy] = sortOrder === "asc" ? 1 : -1;
+  pipeline.push({ $sort: sortOptions });
 
+  // Phân trang
   const skip = (parseInt(page) - 1) * parseInt(limit);
+  pipeline.push({ $skip: skip });
+  pipeline.push({ $limit: parseInt(limit) });
 
-  const results = await Product
-    .find(query)
-    .sort(sortOptions)
-    .skip(skip)
-    .limit(parseInt(limit))
-    .select(Utils.getSelectData(select))
-    .lean();
+  // Chọn trường
+  if (select && select.length > 0) {
+    const project = {};
+    select.forEach((field) => (project[field] = 1));
+    project.finalPrice = 1;
+    pipeline.push({ $project: project });
+  }
 
-  const total = await Product.countDocuments(query);
+  // Lấy kết quả và tổng số bản ghi
+  const results = await Product.aggregate(pipeline);
+  const totalPipeline = pipeline.filter(
+    (stage) => !stage.$skip && !stage.$limit && !stage.$project && !stage.$sort
+  );
+  totalPipeline.push({ $count: "total" });
+  const totalResult = await Product.aggregate(totalPipeline);
+  const total = totalResult[0]?.total || 0;
 
   return {
-      data: results,
-      pagination: {
-          total: total,
-          page: parseInt(page),
-          limit: parseInt(limit),
-          totalPage: Math.ceil(total / parseInt(limit))
-      }
+    results,
+    pagination: {
+      total: total,
+      page: parseInt(page),
+      limit: parseInt(limit),
+      totalPage: Math.ceil(total / parseInt(limit)),
+    },
   };
 };
 
 const deleteProduct = async ({ productID }) => {
-  return Product.deleteOne({ _id: Utils.convertObjectId(productID) }).lean()
-}
+  return Product.deleteOne({ _id: Utils.convertObjectId(productID) });
+};
 
-  
+const updateProductByID = async ({ productID, payload }) => {
+  return await Product.findByIdAndUpdate(productID, payload, {
+    new: true,
+  }).lean();
+};
+
 module.exports = {
   findProductByID,
   findAllProducts,
@@ -182,5 +221,6 @@ module.exports = {
   searchProduct,
   findByCode,
   findProductUnSelect,
-  deleteProduct
+  deleteProduct,
+  updateProductByID,
 };

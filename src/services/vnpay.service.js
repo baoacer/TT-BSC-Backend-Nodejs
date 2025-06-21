@@ -25,7 +25,7 @@ const createPaymentUrl = async ({
     vnp_OrderInfo: "Thanh toan don hang",
     vnp_OrderType: orderType || "others", // loại hàng hóa
     vnp_Amount: amount,
-    vnp_ReturnUrl: 'http://nguyenlequocbao.id.vn/v1/api/vnpay/handle_payment_response',
+    vnp_ReturnUrl: 'http://localhost:3056/v1/api/vnpay/handle_payment_response',
     vnp_IpAddr: ipAddr,
     vnp_CreateDate: createDate,
   };

@@ -7,6 +7,8 @@ const compresstion = require('compression')
 const router = require('./routers/index')
 const app = express();
 const myLogger = require('./loggers/mylogger.log')
+const { getRedisClient } = require('../src/databases/init.redis')
+require('./jobs/index')
 
 const cors = require('cors')
 app.use(cors({
@@ -32,13 +34,20 @@ app.use((req, res, next) => {
     next()
 })
 
-// init database
+/**
+ * Init Database
+ */
 require('./databases/init.mongodb')
+getRedisClient()
 
-// init router
+/**
+ * Init Router
+ */
 app.use("/", router)
 
-// init handle
+/**
+ * Init Handle
+ */
 app.use((req, res, next) => {
     const err = new Error('Not Found')
     err.status = 404
@@ -46,7 +55,7 @@ app.use((req, res, next) => {
 })
 
 app.use((err, req, res, next) => {
-    const statusCode = err.status || 500 //server
+    const statusCode = err.status || 500 
 
     const resMessage = `${err.status} - ${Date.now() - err.now}ms - Response: ${JSON.stringify(err)}`
     myLogger.error(resMessage, [

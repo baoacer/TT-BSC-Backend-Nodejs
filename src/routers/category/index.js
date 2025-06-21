@@ -3,11 +3,13 @@ const asyncHandler = require('../../helpers/asyncHandler')
 const router = express.Router()
 const CategoryController = require('../../controllers/category.controller')
 const validation = require('../../validations/category.validation')
+const { authenticateJWT, requireRole } = require('../../middleware/auth.middleware')
 
-router.route('/').post(validation.createNew, asyncHandler(CategoryController.createNew))
-router.route('/:id').get(validation.params, asyncHandler(CategoryController.getCategoryByID))
-router.route('/').get(asyncHandler(CategoryController.getAllCategories))
-router.route('/:id').put(validation.update, asyncHandler(CategoryController.updateCategoryByID))
-router.route('/:id').delete(validation.params, asyncHandler(CategoryController.deleteCategoryByID))
+
+router.get('/', asyncHandler(CategoryController.getAllCategories))
+
+router.use(authenticateJWT, requireRole('Admin'))
+router.post('/', validation.create, asyncHandler(CategoryController.createNew))
+router.put('/:id', validation.create, asyncHandler(CategoryController.updateCategory))
 
 module.exports = router 

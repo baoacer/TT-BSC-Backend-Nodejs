@@ -5,10 +5,9 @@ const DOCUMENT_NAME = "Inventory";
 const COLLECTION_NAME = "Inventories";
 
 const InventorySchema = new Schema({
-    inven_product_id: {type: Schema.Types.ObjectId, ref: "Product"},
-    inven_location: {type: String, default: 'unknown'},
-    inven_stock: {type: Number, required: true},
-    inven_reservations: {type: Array, default: []},
+    product_id: {type: Schema.Types.ObjectId, ref: "Product"},
+    size: {type: String, required: true},
+    stock: {type: Number, require: true, default: 0},
 }, {
     timestamps: true,
     collection: COLLECTION_NAME

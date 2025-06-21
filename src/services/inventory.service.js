@@ -1,8 +1,7 @@
 'use strict'
 const InventoryRepository = require('./repositories/inventory.repo')
-const { NotFoundError, BadRequestError } = require('../../core/error.response')
-const Inventory = require('../../models/inventory.model')
-const ProductRepository = require('./product.repo')
+const ProductRepository = require('./repositories/product.repo')
+const { NotFoundError } = require('../core/error.response')
 
 const addStockOnProductCreation = async ({
     productID, stock, location = null
@@ -15,51 +14,12 @@ const addStockOnProductCreation = async ({
     })
 }
 
-const deductStockOnOrder = async ({
-    productID, quantity
-}) => {
-    if(quantity <= 0){
-        throw new BadRequestError('Invalid quantity')
-    }
-    const inventory = await InventoryRepository.findInventoryByProductID({ productID });
-    if(!inventory) throw new NotFoundError('Inventory Not Exist!')
-
-    if(inventory.inven_stock < quantity){
-        return false
-    }
-
-    await InventoryRepository.updateInventoryStock({
-        productID,
-        incStock: -quantity
-    });
-    return true
-}
-
-const increaseInventoryStock = async ({ 
-    productID, quantity
-}) => {
-    if (quantity <= 0) throw new BadRequestError('Quantity must be greater than 0');
-    const inventory = await InventoryRepository.findInventoryByProductID({ productID })
-    if(!inventory) throw new NotFoundError('Inventory Not Found')
-    return await InventoryRepository.updateInventoryStock({ productID, incStock: quantity })
-}
-
-
-const decreaseInventoryStock = async ({
-    productID, quantity
-}) => {
-    if (quantity <= 0) throw new BadRequestError('Invalid quantity');
-    const inventory = await InventoryRepository.findInventoryByProductID({ productID })
-    if(!inventory) throw new NotFoundError('Inventory Not Found')
-    return await InventoryRepository.updateInventoryStock({ 
-        productID,
-        incStock: -quantity
+const refundStock = async ({  productID, size, quantity }) => {
+    return await InventoryRepository.updateInventoryStock({
+        productID, size, incStock: quantity
     })
 }
 
 module.exports = {
-    decreaseInventoryStock,
-    increaseInventoryStock,
-    addStockOnProductCreation,
-    deductStockOnOrder
+    addStockOnProductCreation, refundStock
 }

@@ -1,6 +1,7 @@
 const express = require('express')
 const asyncHandler = require('../../helpers/asyncHandler')
 const VnPayController = require('../../controllers/vnpay.controller')
+const { requireRole } = require('../../middleware/auth.middleware')
 const router = express.Router()
 
 router.post('/create_payment_url', asyncHandler(VnPayController.createPaymentUrl))

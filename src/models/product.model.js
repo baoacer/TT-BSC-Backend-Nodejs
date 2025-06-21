@@ -11,9 +11,9 @@ const ProductSchema = new Schema({
     required: true,
     trim: true
   },
-  image: {
-    type: String,
-    required: true
+  images: {
+    url: { type: String },
+    public_id: { type: String }
   },
   description: {
     type: String
@@ -31,18 +31,10 @@ const ProductSchema = new Schema({
     ref: 'Category',
     required: true
   },
-  sizes: {
-    type: [String],
-    required: true
-  },
   code: {
     type: String,
     required: true,
     unique: true
-  },
-  quantity: {
-    type: Number,
-    required: true
   }
 }, {
   timestamps: true,
