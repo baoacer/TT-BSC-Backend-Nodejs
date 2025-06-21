@@ -61,13 +61,6 @@ const getOrdersByAdmin = async ({
   const skip = (page - 1) * limit;
   const filter = {};
 
-  filter.$nor = [
-    {
-      "payment.method": PAYMENT.VNPAY,
-      status: PAYMENT_STATUS.PENDING,
-    },
-  ];
-
   if (status) {
     filter.status = status;
   }

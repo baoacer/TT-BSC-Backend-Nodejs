@@ -1,8 +1,10 @@
 "use strict";
+require("dotenv").config();
 const querystring = require("qs");
 const crypto = require("crypto");
 const moment = require("moment");
 const Utils = require("../utils");
+const { VNPAY_RETURN_URL, VNPAY_URL, VNPAY_HASH_SECRET, VNPAY_TMN_CODE } = process.env
 
 const createPaymentUrl = async ({
   orderId = null,
@@ -18,14 +20,14 @@ const createPaymentUrl = async ({
   let vnp_Params = {
     vnp_Version: "2.1.0",
     vnp_Command: "pay", // thanh toán
-    vnp_TmnCode: 'BV4AURGO', // website code
+    vnp_TmnCode: VNPAY_TMN_CODE, // website code
     vnp_Locale: "vn", // language
     vnp_CurrCode: 'VND', // currency
     vnp_TxnRef: orderId, // mã đơn hàng
     vnp_OrderInfo: "Thanh toan don hang",
     vnp_OrderType: orderType || "others", // loại hàng hóa
     vnp_Amount: amount,
-    vnp_ReturnUrl: 'http://localhost:3056/v1/api/vnpay/handle_payment_response',
+    vnp_ReturnUrl: VNPAY_RETURN_URL,
     vnp_IpAddr: ipAddr,
     vnp_CreateDate: createDate,
   };
@@ -33,7 +35,7 @@ const createPaymentUrl = async ({
   vnp_Params = Utils.sortObject(vnp_Params); // sắp xếp thứ tự tham số A-Z
 
   const signData = querystring.stringify(vnp_Params, { encode: false });
-  const hmac = crypto.createHmac("sha512", 'NYPDINBB0ZIAB2MBA17N7DSM6JYD1OJO');
+  const hmac = crypto.createHmac("sha512", VNPAY_HASH_SECRET);
   const signed = hmac.update(Buffer.from(signData, "utf-8")).digest("hex");
   vnp_Params.vnp_SecureHash = signed;
   const paymentUrl = `https://sandbox.vnpayment.vn/paymentv2/vpcpay.html?${querystring.stringify(
@@ -51,7 +53,7 @@ const handlePaymentResponse = (vnp_Params = {}) => {
   vnp_Params = Utils.sortObject(vnp_Params);
   const signData = querystring.stringify(vnp_Params, { encode: false });
   const signed = crypto
-    .createHmac("sha512", 'NYPDINBB0ZIAB2MBA17N7DSM6JYD1OJO')
+    .createHmac("sha512", VNPAY_HASH_SECRET)
     .update(Buffer.from(signData, "utf-8"))
     .digest("hex");
 
