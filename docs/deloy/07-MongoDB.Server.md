@@ -6,7 +6,7 @@
  sudo apt update
  sudo apt upgrade -y
 ```
-
+ 
 Add repo mongodb
 ```bash
 wget -qO - https://pgp.mongodb.com/server-6.0.asc | sudo gpg --dearmor -o /usr/share/keyrings/mongodb-server-6.0.gpg
