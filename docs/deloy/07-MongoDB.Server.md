@@ -96,18 +96,6 @@ pm2 start server.js --name=shopdev-backend
 ```
 
 ---
-
-## 🌐 6. Mở Port 3056 trên EC2
-
-1. 🖥️ Truy cập **EC2 Dashboard > Instances**.
-2. 🔒 Chọn Instance > tab **Security**.
-3. ➕ Vào **Inbound rules** > **Edit inbound rules**.
-4. ➕ Chọn **Add rule**:
-   - **Type**: Custom TCP
-   - **Port range**: 3056
-   - **Source**: Anywhere-IPv4
-5. 💾 **Save rule**.
-
 ## 6. Thiết lập chứng chỉ https
 
 ```bash
