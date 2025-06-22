@@ -11,7 +11,7 @@ const { getRedisClient } = require('../src/databases/init.redis')
 require('./jobs/index')
 
 const cors = require('cors')
-app.use(cors({
+app.use(cors({ 
     origin: "*"
 }))
 
