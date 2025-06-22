@@ -82,7 +82,7 @@ const sendEmailResetPassword = async ({ email, password }) => {
      * 3. Replace Placeholder Email Template
      */
     const content = Utils.replacePlaceholder(template.tem_html, {
-      email: password
+      password
     });
 
     /**

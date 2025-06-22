@@ -98,7 +98,7 @@ RESET_PASSWORD_EMAIL = `<!DOCTYPE html>
           <tr>
             <td style="color:#555555; font-size:16px; line-height:1.5;">
               <p>Chúng tôi đã nhận được yêu cầu cấp lại mật khẩu cho tài khoản tại <strong>ShopBSC</strong>.</p>
-              <p>Mật khẩu tạm thời mới của bạn chính là địa chỉ email của bạn:</p>
+              <p>Mật khẩu tạm thời mới là:</p>
             </td>
           </tr>
           <tr>

@@ -21,7 +21,7 @@ class UserRepository {
   static async findUserByEmail({ email }) {
     let user = await USER.findOne({
       email: email,
-    }).populate("role", "name").lean();
+    }).populate("role", "name");
     return user;
   }
 
