@@ -95,7 +95,7 @@ pm2 list
 pm2 start server.js --name=shopdev-backend
 ```
 
----
+--- 
 ## 6. Thiết lập chứng chỉ https
 
 ```bash
