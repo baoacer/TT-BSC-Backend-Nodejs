@@ -15,7 +15,7 @@ class UserRepository {
       email,
       password,
       role,
-    });
+    }); 
   }
 
   static async findUserByEmail({ email }) {
