@@ -45,7 +45,7 @@ const sendEmailToken = async ({ email }) => {
       name: "verify-email",
     });
 
-    /**
+    /** 
      * 3. Replace Placeholder Email Template
      */
     if (!template) throw new NotFoundError("Template not found");
