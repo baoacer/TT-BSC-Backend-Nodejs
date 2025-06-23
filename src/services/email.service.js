@@ -1,3 +1,4 @@
+require("dotenv").config();
 const { TEMPLATE } = require("../configs/contants");
 const { NotFoundError } = require("../core/error.response");
 const transporter = require("../databases/init.nodemailer");
@@ -50,7 +51,7 @@ const sendEmailToken = async ({ email }) => {
     if (!template) throw new NotFoundError("Template not found");
 
     const content = Utils.replacePlaceholder(template.tem_html, {
-      link_verify: `http://localhost:3056/v1/api/user/welcome-back?token=${token.otp_token}`,
+      link_verify: process.env.VERIFICATION_EMAIL_LINK + token.otp_token,
     });
 
     /**

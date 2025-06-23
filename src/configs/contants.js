@@ -127,6 +127,8 @@ RESET_PASSWORD_EMAIL = `<!DOCTYPE html>
 </body>
 </html>`
 
+
+
 const TEMPLATE = {
   VERIFY_EMAIL:'verify-email',
   RESET_PASSWORD_EMAIL:'reset-password',
