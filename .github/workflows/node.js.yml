@@ -24,5 +24,7 @@ jobs:
       run: echo "${{ secrets.ENV_CONTENT  }}" > .env
       
     - run: npm ci
-    - run: pm2 restart server.js
+    - name: Deploy app with PM2
+      run: |
+        pm2 start server.js --name backend || pm2 restart backend
 
